@@ -1,0 +1,118 @@
+%
+% @file medical-expert-system.pl
+% @author Paul Malayrevich <paul.malyarevich@gmail.com>
+% @version 2.0
+%
+% Init
+go:-
+    percent(P),
+    diagnostic,
+    hypotest(P),
+    nl,
+    undo.
+%
+percent(perc) :-
+    write('Does the patient have the following symptom: '),
+    readln(perc).
+
+
+hypoth(unknown) :-
+    commoncold,
+    flu,
+    angina,
+    sinusitis,
+    pneumonia,
+    pigflu,
+    unknown.
+
+
+% Tests for hypothesis
+hypothesis(commoncold):- commoncold.
+hypothesis(flu):- flu.
+hypothesis(angina):- angina.
+hypothesis(sinusitis):- sinusitis.
+hypothesis(pneumonia):- pneumonia.
+hypothesis(pigflu):- pigflu.
+hypothesis(unknown). /* Not one of the above */
+
+% All symptoms
+diagnostic :-
+    symptom(headaches),
+    symptom(noserunning),
+    symptom(sneezing),
+    symptom(throatpain),
+    symptom(fever),
+    symptom(chills),
+    symptom(cough),
+    symptom(nausea),
+    symptom(bodyaches).
+
+% hypotest
+hypotest(P) :-
+    write('Most likely you are sicks: '),
+    while :-
+    (H <> unknown)
+    IF:-
+
+    hypoth(H),
+    write(H).
+
+
+
+% Illness
+commoncold :-
+       symptom(headaches),
+       symptom(noserunning),
+       symptom(sneezing),
+       symptom(throatpain).
+flu :-
+       symptom(fever),
+       symptom(headaches),
+       symptom(chills),
+       symptom(bodyaches).
+angina :-
+       symptom(cough),
+       symptom(fever),
+       symptom(nausea),
+       symptom(throatpain).
+sinusitis :-
+       symptom(nausea),
+       symptom(noserunning),
+       symptom(headaches),
+       symptom(sneezing),
+       symptom(eyespain).
+pneumonia :-
+       symptom(cough),
+       symptom(nausea),
+       symptom(fever),
+       symptom(bodyaches).
+pigflu :-
+       symptom(cough),
+       symptom(noserunning),
+       symptom(nausea),
+       symptom(bodyaches).
+unknown :-
+    fail.
+
+% Functions
+ask(Q) :-
+    write('Does the patient have the following symptom: '),
+    write(Q),
+    write('? '),
+    readln(A),
+    nl,
+    ( (A == [yes] ; A == [y])
+      ->
+       assert(yes(Q)) ;
+       assert(no(Q))),!.
+
+:- dynamic yes/1,no/1.
+
+symptom(S) :- (yes(S) -> true ;
+               (no(S)  -> fail ;
+               ask(S))),!.
+
+% For session
+undo :- retract(yes(_)),fail.
+undo :- retract(no(_)),fail.
+undo.
